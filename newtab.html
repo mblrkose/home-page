@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Start Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* Utility: hidden (replaces Tailwind CDN which is blocked by extension CSP) */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ── CSS Variables (set by JS per theme) ── */
+        :root {
+            --bg: #081c15;
+            --card-a: #1b4332;
+            --card-b: #2d6a4f;
+            --card-c: #40916c;
+            --card-d: #40916c;
+            --accent: #52b788;
+            --accent2: #b7e4c7;
+            --primary: #d8f3dc;
+            --search-bg: #2d6a4f;
+            --search-border: rgba(82, 183, 136, 0.2);
+            --text: #d8f3dc;
+            --text-muted: #b7e4c7;
+            --text-dim: #95d5b2;
+            --shadow-glow: 0 0 25px rgba(82, 183, 136, 0.2);
+            --shortcut-bg: #52b788;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--card-b);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--card-c);
+        }
+
+        /* Clock */
+        #clock-time {
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        /* Search */
+        .search-wrap {
+            background: var(--search-bg);
+            border: 1.5px solid var(--search-border);
+            border-radius: 9999px;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .search-wrap:focus-within {
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent);
+        }
+
+        #search-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        #search-input::placeholder {
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Weather card */
+        .weather-card {
+            background: linear-gradient(135deg, var(--card-c), var(--card-b));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .weather-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.07), transparent);
+            pointer-events: none;
+        }
+
+        /* Shortcut tiles */
+        .shortcut-tile {
+            background: var(--card-b);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .shortcut-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Engine buttons */
+        .engine-btn {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            opacity: 0.5;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--primary);
+        }
+
+        .engine-btn:hover {
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .engine-btn.active {
+            opacity: 1;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
+        }
+
+        .engine-btn img {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        /* Custom Checkbox */
+        .task-checkbox-container {
+            display: block;
+            position: relative;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .task-checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1.5px solid var(--search-border);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox-container:hover input~.task-checkmark {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+        }
+
+        .task-checkbox-container input:checked~.task-checkmark {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .task-checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .task-checkbox-container input:checked~.task-checkmark:after {
+            display: block;
+        }
+
+        .task-checkbox-container .task-checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid var(--bg);
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Items (Todos & Bookmarks) */
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.75rem 0.875rem;
+            border-radius: 0.875rem;
+            background: rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.22s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .item-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(2px);
+        }
+
+        .item-row .text-label {
+            flex: 1;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .item-row.done .text-label {
+            text-decoration: line-through;
+            opacity: 0.35;
+        }
+
+        .item-row.done .task-checkmark {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .item-row.done .task-checkmark:after {
+            display: block;
+        }
+
+        .item-icon-box {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.625rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Shortcut Tiles */
+        .shortcut-tile {
+            background: var(--card-b);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100px;
+            text-decoration: none;
+            position: relative;
+            width: 100%;
+        }
+
+        .shortcut-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .shortcut-add-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 2px dashed var(--accent);
+            background: rgba(255, 255, 255, 0.01);
+            opacity: 0.4;
+            cursor: pointer;
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+
+        .shortcut-add-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border-style: solid;
+        }
+
+        /* Shortcut Deletion Fix & Hover */
+        .shortcut-tile-wrap {
+            position: relative;
+            display: flex;
+        }
+
+        /* Delete buttons */
+        .delete-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 800;
+            opacity: 0;
+            transform: scale(0.7);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+
+        .group:hover .delete-btn {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+
+        .delete-btn:hover {
+            background: #fff;
+            transform: scale(1.15) !important;
+        }
+
+        /* Theme switcher */
+        #theme-switcher {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            transition: transform 0.2s, outline-color 0.2s;
+            padding: 0;
+        }
+
+        .theme-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .theme-dot.active {
+            outline-color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: var(--card-a);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            width: min(400px, 90vw);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-input {
+            background: var(--card-b);
+            border: 1.5px solid var(--search-border);
+            border-radius: 0.75rem;
+            color: var(--primary);
+            padding: 0.625rem 1rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .modal-input:focus {
+            border-color: var(--accent);
+        }
+
+        .modal-input::placeholder {
+            color: var(--text-dim);
+            opacity: 0.7;
+        }
+
+        .modal-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.625rem 1.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.85;
+        }
+
+        .modal-btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-btn-ghost:hover {
+            opacity: 0.7;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1.25rem 0.875rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+        }
+
+        .icon-btn {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Scrollable panel body */
+        .panel-body {
+            padding: 0.875rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Responsive grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.25rem;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        @media (max-width: 900px) {
+
+            .col-8,
+            .col-4,
+            .col-12 {
+                grid-column: span 12;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════════════════════════════ -->
+    <main
+        style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 2rem 1.5rem;">
+        <div class="main-grid" style="width:100%; max-width:1100px;">
+
+            <!-- ── Clock ────────────────────────────────────────── -->
+            <div class="col-8 card"
+                style="padding:2.5rem 2.5rem 2rem; position:relative; overflow:hidden; min-height:180px; display:flex; align-items:center;">
+                <div style="position:absolute; top:0; right:0; width:16rem; height:16rem;
+           background:radial-gradient(circle, var(--accent) 0%, transparent 70%);
+           opacity:0.07; border-radius:50%; transform:translate(40%, -40%); pointer-events:none;"></div>
+                <div style="position:relative; z-index:1;">
+                    <div id="clock-time">--:--</div>
+                    <p id="clock-date"
+                        style="font-size:1.1rem; font-weight:500; color:var(--text-muted); margin-top:0.5rem; letter-spacing:0.025em;">
+                        Loading...</p>
+                </div>
+            </div>
+
+            <!-- ── Weather ──────────────────────────────────────── -->
+            <div class="col-4 weather-card"
+                style="padding:1.5rem; display:flex; flex-direction:column; justify-content:space-between; min-height:180px;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
+                    <div>
+                        <span
+                            style="font-size:0.78rem; font-weight:600; display:flex; align-items:center; gap:0.25rem; color:var(--primary); opacity:0.9;">
+                            <span class="material-symbols-outlined" style="font-size:14px;">location_on</span>
+                            <span id="weather-city">Locating...</span>
+                        </span>
+                        <div id="weather-temp"
+                            style="font-size:2.8rem; font-weight:800; color:var(--primary); margin-top:0.5rem; line-height:1;">
+                            --°C</div>
+                        <div id="weather-label"
+                            style="font-size:0.9rem; font-weight:500; color:var(--primary); opacity:0.85; margin-top:0.25rem;">
+                            --</div>
+                        <div id="weather-error" style="color:var(--accent2); font-size:0.8rem;"></div>
+                    </div>
+                    <div style="width:3.5rem; height:3.5rem; border-radius:50%; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.15);
+             display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <span id="weather-icon" class="material-symbols-outlined"
+                            style="font-size:2rem; color:var(--primary);">cloud</span>
+                    </div>
+                </div>
+                <div id="weather-forecast"
+                    style="display:flex; justify-content:space-between; margin-top:1rem; padding-top:0.875rem; border-top:1px solid rgba(255,255,255,0.1); position:relative; z-index:1;">
+                    <!-- filled by JS -->
+                </div>
+            </div>
+
+            <!-- ── Search ───────────────────────────────────────── -->
+            <div class="col-12" style="display:flex; justify-content:center; padding:0.25rem 0;">
+                <div style="width:100%; max-width:680px; position:relative;" class="search-container">
+                    <div style="position:absolute; inset:0; background:var(--accent); opacity:0; border-radius:9999px; filter:blur(20px); transition:opacity 0.4s; pointer-events:none;"
+                        id="search-glow"></div>
+                    <label class="search-wrap"
+                        style="display:flex; align-items:center; height:3.75rem; padding:0 1.5rem; gap:0.5rem;">
+                        <span class="material-symbols-outlined"
+                            style="color:var(--accent); font-size:1.5rem; flex-shrink:0;">search</span>
+                        <input id="search-input" type="text" placeholder="Search the web..." autocomplete="off"
+                            spellcheck="false" />
+                        <!-- Engine buttons -->
+                        <div
+                            style="display:flex; align-items:center; gap:0.375rem; border-left:1px solid rgba(255,255,255,0.12); padding-left:0.875rem; flex-shrink:0;">
+                            <!-- Google -->
+                            <button data-engine="google" title="Google" class="engine-btn">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="G">
+                            </button>
+                            <!-- DuckDuckGo -->
+                            <button data-engine="ddg" title="DuckDuckGo" class="engine-btn">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=duckduckgo.com" alt="D">
+                            </button>
+                            <!-- Perplexity -->
+                            <button data-engine="perplexity" title="Perplexity" class="engine-btn">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=perplexity.ai" alt="P">
+                            </button>
+                            <!-- Yandex -->
+                            <button data-engine="yandex" title="Yandex" class="engine-btn">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=yandex.com" alt="Y">
+                            </button>
+                        </div>
+                        <button id="search-btn" class="search-go-btn"
+                            style="background:var(--accent); color:var(--bg); border:none; border-radius:9999px; padding:0 1.25rem; height:2.5rem; font-weight:700; font-size:0.9rem; cursor:pointer; transition:opacity 0.2s; flex-shrink:0; font-family:'Inter',sans-serif;">Go</button>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ── Todos ─────────────────────────────────────────── -->
+            <div class="col-4 card" style="display:flex; flex-direction:column; min-height:300px;">
+                <div class="section-header">
+                    <span class="section-title">
+                        <span class="material-symbols-outlined"
+                            style="font-size:1.1rem;color:var(--accent);">checklist</span>
+                        Tasks
+                    </span>
+                    <button class="icon-btn" id="todo-add-btn" title="Add task">
+                        <span class="material-symbols-outlined" style="font-size:1.2rem;">add</span>
+                    </button>
+                </div>
+                <!-- Add input row -->
+                <div
+                    style="padding:0.625rem 0.875rem; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; gap:0.5rem;">
+                    <input id="todo-input" type="text" placeholder="New task..." autocomplete="off"
+                        style="flex:1; background:rgba(0,0,0,0.2); border:1.5px solid var(--search-border); border-radius:0.625rem;
+                 color:var(--primary); padding:0.4rem 0.75rem; font-size:0.875rem; outline:none; font-family:'Inter',sans-serif;" class="todo-input-field" />
+                </div>
+                <div id="todo-list" class="panel-body"
+                    style="min-height:160px; max-height:280px; display:flex; flex-direction:column; gap:0.375rem;">
+                </div>
+            </div>
+
+            <!-- ── Bookmarks ─────────────────────────────────────── -->
+            <div class="col-4 card" style="display:flex; flex-direction:column; min-height:300px;">
+                <div class="section-header">
+                    <span class="section-title">
+                        <span class="material-symbols-outlined"
+                            style="font-size:1.1rem;color:var(--accent);">bookmarks</span>
+                        Bookmarks
+                    </span>
+                    <button class="icon-btn" id="bm-add-btn" title="Add bookmark">
+                        <span class="material-symbols-outlined" style="font-size:1.2rem;">add</span>
+                    </button>
+                </div>
+                <div id="bookmarks-list" class="panel-body"
+                    style="min-height:200px; max-height:300px; display:flex; flex-direction:column; gap:0.375rem;">
+                </div>
+            </div>
+
+            <!-- ── Shortcuts ─────────────────────────────────────── -->
+            <div class="col-4 card" style="display:flex; flex-direction:column; min-height:300px;">
+                <div class="section-header">
+                    <span class="section-title">
+                        <span class="material-symbols-outlined"
+                            style="font-size:1.1rem;color:var(--accent);">apps</span>
+                        Shortcuts
+                    </span>
+                </div>
+                <div id="shortcuts-grid" class="panel-body"
+                    style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.625rem; align-content:start; min-height:200px; max-height:320px; overflow-y:auto;">
+                </div>
+            </div>
+
+        </div><!-- /main-grid -->
+    </main>
+
+    <!-- ══════════════════════════════════════════════════════════
+     THEME SWITCHER  (floating bottom-right)
+═══════════════════════════════════════════════════════════ -->
+    <div style="position:fixed; bottom:1.25rem; right:1.25rem; z-index:100;
+            background:rgba(0,0,0,0.35); backdrop-filter:blur(12px);
+            border:1px solid rgba(255,255,255,0.1); border-radius:9999px;
+            padding:0.5rem 0.75rem; display:flex; align-items:center; gap:0.5rem;">
+        <span class="material-symbols-outlined" style="font-size:0.95rem; color:rgba(255,255,255,0.4);">palette</span>
+        <div id="theme-switcher"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+     MODAL — Add Bookmark
+═══════════════════════════════════════════════════════════ -->
+    <div id="bm-modal" class="modal-backdrop hidden" role="dialog">
+        <div class="modal-box">
+            <h3 style="color:var(--primary); font-size:1.05rem; font-weight:700; margin:0 0 1.25rem 0;">Add Bookmark
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                <input id="bm-name" class="modal-input" type="text" placeholder="Name (e.g. GitHub)"
+                    autocomplete="off" />
+                <input id="bm-url" class="modal-input" type="text" placeholder="URL (e.g. github.com)"
+                    autocomplete="off" />
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:0.625rem; margin-top:1.25rem;">
+                <button class="modal-btn-ghost" data-close-modal="bm-modal">Cancel</button>
+                <button class="modal-btn" id="bm-save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+     MODAL — Add Shortcut
+═══════════════════════════════════════════════════════════ -->
+    <div id="sc-modal" class="modal-backdrop hidden" role="dialog">
+        <div class="modal-box">
+            <h3 style="color:var(--primary); font-size:1.05rem; font-weight:700; margin:0 0 1.25rem 0;">Add Shortcut
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                <input id="sc-name" class="modal-input" type="text" placeholder="Name (e.g. Netflix)"
+                    autocomplete="off" />
+                <input id="sc-url" class="modal-input" type="text" placeholder="URL (e.g. netflix.com)"
+                    autocomplete="off" />
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:0.625rem; margin-top:1.25rem;">
+                <button class="modal-btn-ghost" data-close-modal="sc-modal">Cancel</button>
+                <button class="modal-btn" id="sc-save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="newtab.js"></script>
+</body>
+
+</html>
